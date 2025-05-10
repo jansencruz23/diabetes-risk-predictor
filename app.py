@@ -36,5 +36,15 @@ fam_mem = form.radio(
 submit = form.form_submit_button('Submit')
 
 if submit:
-    print(type(age))
+    age_scr = 0 if age < 45 else 2 if age >= 45 and age <= 54 else 3 if age >= 55 and age <= 64 else 4
+    bmi_scr = 0 if bmi < 25 else 1 if bmi >= 25 and bmi <= 30 else 3
+    m_waist_scr = 0 if waist < 94 else 3 if waist >= 94 and waist <= 102 else 4
+    f_waist_scr = 0 if waist < 80 else 3 if waist >= 80 and waist <= 88 else 4
+    waist_src = m_waist_scr if gender == 'Male' else f_waist_scr
+    phy_act_scr = 0 if phy_act == 'Yes' else 2
+    diet_scr = 0 if diet == 'Every day' else 1
+    bp_med_scr = 0 if bp_med == 'No' else 2
+    high_glu_scr = 0 if high_glu == 'No' else 5
+    fam_mem_scr = 0 if fam_mem == 'No' else 5 if fam_mem == 'Yes: parent, brother, sister, or own child' else 3
+    
     

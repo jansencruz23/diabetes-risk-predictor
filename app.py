@@ -2,6 +2,15 @@ import streamlit as st
 import pickle
 from funcs import predict_risk_category
 
+risk_colors = {
+    'low': '<span style="color:green;">Low</span>',
+    'slightly elevated': '<span style="color:goldenrod;">Slightly Elevated</span>',
+    'moderate': '<span style="color:orange;">Moderate</span>',
+    'high': '<span style="color:deeppink;">High</span>',
+    'very high': '<span style="color:red;">Very High</span>'
+}
+
+
 # load model and scaler
 with open('model_and_scaler.pkl', 'rb') as f:
     scaler, model = pickle.load(f)
@@ -61,8 +70,9 @@ if submitted:
     ]
     
     risk, conf = predict_risk_category(model, scaler, *features)
+    risk_formatted = risk_colors.get(risk.lower(), risk)
 
     with st.container(border=True):
         st.write("### Predictions")
-        st.write(f"Risk: {risk}")
-        st.write(f"Confidence: {conf}")
+        st.markdown(f"**Risk:** {risk_formatted}", unsafe_allow_html=True)
+        st.write(f"**Confidence:** {conf}")

@@ -1,8 +1,13 @@
 import streamlit as st
 import pickle
+from funcs import predict_risk_category
 
 with open('model_and_scaler.pkl', 'rb') as f:
-    model, scaler = pickle.load(f)
+    scaler, model = pickle.load(f)
+
+result, conf = '', ''
+
+st.title("Diabetes Risk Assessment Form Using :blue[SVM Machine Learning]")
 
 form = st.form('form')
 age = form.number_input('Age', step=1, min_value=0, max_value=120)
@@ -38,13 +43,19 @@ submit = form.form_submit_button('Submit')
 if submit:
     age_scr = 0 if age < 45 else 2 if age >= 45 and age <= 54 else 3 if age >= 55 and age <= 64 else 4
     bmi_scr = 0 if bmi < 25 else 1 if bmi >= 25 and bmi <= 30 else 3
-    m_waist_scr = 0 if waist < 94 else 3 if waist >= 94 and waist <= 102 else 4
-    f_waist_scr = 0 if waist < 80 else 3 if waist >= 80 and waist <= 88 else 4
-    waist_src = m_waist_scr if gender == 'Male' else f_waist_scr
+    m_waist_scr = 0 if gender == 'Female' else 0 if waist < 94 else 3 if waist >= 94 and waist <= 102 else 4
+    f_waist_scr = 0 if gender == 'Male' else 0 if waist < 80 else 3 if waist >= 80 and waist <= 88 else 4
     phy_act_scr = 0 if phy_act == 'Yes' else 2
     diet_scr = 0 if diet == 'Every day' else 1
     bp_med_scr = 0 if bp_med == 'No' else 2
     high_glu_scr = 0 if high_glu == 'No' else 5
     fam_mem_scr = 0 if fam_mem == 'No' else 5 if fam_mem == 'Yes: parent, brother, sister, or own child' else 3
+
+    feats = [bmi_scr, phy_act_scr, diet_scr, bp_med_scr, high_glu_scr, fam_mem_scr, m_waist_scr, f_waist_scr, age_scr]
     
-    
+    result, conf = predict_risk_category(model, scaler, *feats)
+
+container = st.container(border=True)
+container.write("### Predictions")
+container.write(f'Risk: {result}')
+container.write(f'Confidence: {conf}')
